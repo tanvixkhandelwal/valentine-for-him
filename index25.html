@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Valentine 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background-color: #f7e6e8;
+      overflow: hidden;
+    }
+
+    /* LILY BACKGROUND */
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("lily.jpg");
+      background-repeat: no-repeat;
+      background-size: 65%;
+      background-position: left center;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+      z-index: 0;
+    }
+
+    body.show-lily::before {
+      opacity: 0.12;
+    }
+
+    #app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+    }
+
+    body.show-content #app {
+      opacity: 1;
+    }
+
+    /* FLOWER */
+    .flower-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .flower {
+      width: 40px;
+      transform: scale(0.05);
+      animation: flowerExpand 4s ease-in-out forwards;
+    }
+
+    @keyframes flowerExpand {
+      0% { transform: scale(0.05); opacity: 0.9; }
+      60% { transform: scale(6); opacity: 0.7; }
+      100% { transform: scale(10); opacity: 0; }
+    }
+
+    /* CARD */
+    .card {
+      background: white;
+      padding: 60px;
+      border-radius: 30px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+      text-align: center;
+      width: 420px;
+    }
+
+    h1 {
+      font-family: 'Comic Neue', cursive;
+      color: #d94b6a;
+      margin-bottom: 25px;
+    }
+
+    p {
+      font-size: 22px;
+      color: #444;
+      margin-bottom: 40px;
+    }
+
+    .buttons {
+      position: relative;
+      height: 220px;
+    }
+
+    button {
+      padding: 18px 38px;
+      font-size: 18px;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.25s ease;
+    }
+
+    #yes {
+      background: #d94b6a;
+      color: white;
+    }
+
+    #no {
+      background: #f4d7de;
+      color: #d94b6a;
+      position: absolute;
+      left: 200px;
+      top: 100px;
+    }
+
+    .big-yes {
+      font-size: 64px;
+      padding: 40px 80px;
+      border-radius: 80px;
+      background: #d94b6a;
+      color: white;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+    }
+
+    /* HEART METER */
+    .heart-container {
+      width: 100%;
+      height: 28px;
+      background: #f4d7de;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
+    .heart-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff6f91, #d94b6a);
+      border-radius: 20px;
+    }
+
+    .percent {
+      font-size: 22px;
+      color: #444;
+    }
+
+    .done {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #d94b6a;
+      display: none;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    /* DREAMY FLOATING HEARTS */
+    .hearts {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -40px;
+      opacity: 0.7;
+      animation: floatUp linear forwards;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-120vh) translateX(var(--drift));
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="flower-overlay">
+    <img src="flower.png" class="flower" alt="flower">
+  </div>
+
+  <div id="app"></div>
+
+  <script>
+    const loveSong = new Audio("song.mp3");
+
+    setTimeout(() => {
+      document.body.classList.add("show-lily");
+      document.body.classList.add("show-content");
+    }, 4000);
+
+    let noAttempts = 0;
+    let noUnlocked = false;
+    let noTextIndex = 0;
+    let yesScale = 1;
+
+    const noTexts = [
+      "NO 🙄","are you sure? 😐","pls think again 🥺",
+      "don’t break my heart 😭","this is getting rude 😤",
+      "ok wow 💔","last chance 😶","bro 😭"
+    ];
+
+    renderMain();
+
+    function renderMain() {
+      document.getElementById("app").innerHTML = `
+        <div class="card">
+          <h1>hiiiii gola is my mola 🤍</h1>
+          <p>Will you be my valentine baby? 😆😋😚</p>
+          <div class="buttons">
+            <button id="yes">YES 💘</button>
+            <button id="no">NO 🙄</button>
+          </div>
+        </div>
+      `;
+      const yesBtn = document.getElementById("yes");
+      const noBtn = document.getElementById("no");
+      yesBtn.onclick = renderHeartMeter;
+      noBtn.onmouseover = () => moveNo(noBtn, yesBtn);
+      noBtn.onclick = () => { if (noUnlocked) renderNoPage(); };
+    }
+
+    function moveNo(noBtn, yesBtn) {
+      if (noUnlocked) return;
+      const box = document.querySelector(".buttons");
+      noBtn.style.left = Math.random() * (box.clientWidth - noBtn.offsetWidth) + "px";
+      noBtn.style.top = Math.random() * (box.clientHeight - noBtn.offsetHeight) + "px";
+      noBtn.textContent = noTexts[noTextIndex++ % noTexts.length];
+      yesScale += 0.12;
+      yesBtn.style.transform = `scale(${yesScale})`;
+      if (++noAttempts >= 10) {
+        noUnlocked = true;
+        noBtn.textContent = "NO 😳";
+      }
+    }
+
+    function renderNoPage() {
+      document.getElementById("app").innerHTML = `
+        <div class="center">
+          <h1>MAAARUUU???</h1>
+          <button id="sayYes">SAY YES STUPID</button>
+        </div>
+      `;
+      document.getElementById("sayYes").onclick = renderHugeYes;
+    }
+
+    function renderHugeYes() {
+      document.getElementById("app").innerHTML = `
+        <div class="center">
+          <button class="big-yes" id="hugeYes">YES 💖</button>
+        </div>
+      `;
+      document.getElementById("hugeYes").onclick = renderHeartMeter;
+    }
+
+    function renderHeartMeter() {
+      loveSong.play().catch(() => {});
+      document.getElementById("app").innerHTML = `
+        <div class="card">
+          <h1 id="title">Calculating Valentine Status…</h1>
+          <div class="heart-container"><div class="heart-fill" id="fill"></div></div>
+          <div class="percent" id="percent">0%</div>
+          <div class="done" id="done">Valentine Status: CONFIRMED 💘</div>
+        </div>
+      `;
+
+      let progress = 0;
+      const fill = document.getElementById("fill");
+      const percent = document.getElementById("percent");
+      const done = document.getElementById("done");
+      const title = document.getElementById("title");
+
+      const interval = setInterval(() => {
+        progress++;
+        fill.style.width = progress + "%";
+        percent.textContent = progress + "%";
+        if (progress >= 100) {
+          clearInterval(interval);
+          percent.style.display = "none";
+          done.style.display = "block";
+          title.textContent = "💖";
+          setTimeout(renderFinalYes, 1500);
+        }
+      }, 30);
+    }
+
+    function renderFinalYes() {
+      document.getElementById("app").innerHTML = `
+        <div class="card">
+          <h1>YAYYYYY 💖</h1>
+          <p style="font-size:24px; line-height:1.6;">
+            I LOVE YOU SO MUCH BABY 😆💘<br><br>
+            Happy Valentine’s Day gola ❤️
+          </p>
+        </div>
+        <div class="hearts" id="hearts"></div>
+      `;
+
+      // start dreamy hearts AFTER text appears
+      setTimeout(launchHearts, 800);
+    }
+
+    function launchHearts() {
+      const container = document.getElementById("hearts");
+      const interval = setInterval(() => {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = "💖";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = 20 + Math.random() * 20 + "px";
+        heart.style.animationDuration = 8 + Math.random() * 4 + "s";
+        heart.style.setProperty("--drift", (Math.random() * 60 - 30) + "px");
+        container.appendChild(heart);
+        setTimeout(() => heart.remove(), 12000);
+      }, 700);
+
+      // stop hearts after 8 seconds (soft, dreamy)
+      setTimeout(() => clearInterval(interval), 8000);
+    }
+  </script>
+
+</body>
+</html>
